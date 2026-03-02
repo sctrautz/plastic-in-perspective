@@ -45,7 +45,6 @@ export const HISTORICAL_MARKERS = [
   { year: 1969, label: 'Moon Landing' },
 ];
 
-// Exact CSV column names from Our World in Data exports
 export const CSV_COLUMNS = {
   production: 'Annual plastic production between 1950 and 2019',
   wastePerCapita: 'Per capita plastic waste',
@@ -53,7 +52,6 @@ export const CSV_COLUMNS = {
   oceanAccumulation: 'Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans',
 };
 
-// CSVs live in public/data/ — served at /plastic-in-perspective/data/ on GitHub Pages
 const BASE = import.meta.env.BASE_URL;
 export const DATA_PATHS = {
   production: `${BASE}data/global-plastics-production.csv`,

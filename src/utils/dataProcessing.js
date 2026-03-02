@@ -7,8 +7,6 @@ const {
   oceanAccumulation: COL_OCEAN,
 } = CSV_COLUMNS;
 
-// Returns per-second/minute/truck rates derived from the production CSV.
-// Filters to the World aggregate row and picks the latest year.
 export function calculatePlasticRate(productionData) {
   const worldRows = productionData
     .filter((d) => d.Entity === 'World')
@@ -25,7 +23,6 @@ export function calculatePlasticRate(productionData) {
   };
 }
 
-// Returns sorted array of { year, tonnes } for the World production time series.
 export function getProductionTimeSeries(productionData) {
   return productionData
     .filter((d) => d.Entity === 'World' && d[COL_PRODUCTION])
@@ -33,19 +30,17 @@ export function getProductionTimeSeries(productionData) {
     .sort((a, b) => a.year - b.year);
 }
 
-// Returns kg/person/year of plastic waste for a given country (2010 snapshot).
+// returns kg/person/day (CSV unit)
 export function getCountryWaste(wasteData, countryName) {
   const row = wasteData.find((d) => d.Entity === countryName);
   return row ? +row[COL_WASTE] : null;
 }
 
-// Returns kg/person/year of mismanaged plastic waste for a given country.
 export function getCountryMismanaged(mismanagedData, countryName) {
   const row = mismanagedData.find((d) => d.Entity === countryName);
   return row ? +row[COL_MISMANAGED] : null;
 }
 
-// Returns sorted array of { year, tonnes } for global ocean accumulation.
 export function getOceanTimeSeries(oceanData) {
   return oceanData
     .filter((d) => d.Entity === 'World' && d[COL_OCEAN])
@@ -53,8 +48,6 @@ export function getOceanTimeSeries(oceanData) {
     .sort((a, b) => a.year - b.year);
 }
 
-// Returns a flat array of all countries with both waste and mismanaged values,
-// keyed by ISO3 code for joining to TopoJSON.
 export function mergeCountryData(wasteData, mismanagedData) {
   const mismanagedByCode = {};
   mismanagedData.forEach((d) => {
@@ -71,10 +64,11 @@ export function mergeCountryData(wasteData, mismanagedData) {
     }));
 }
 
-// Returns per-person lifetime plastic stats given country kg/year and age.
-export function calculatePersonalImpact(kgPerYear, age) {
+export function calculatePersonalImpact(kgPerDay, age) {
+  const kgPerYear = kgPerDay * 365;
   const lifetimeKg = kgPerYear * age;
   return {
+    kgPerDay,
     kgPerYear,
     lifetimeKg,
     bowlingBalls: Math.round(lifetimeKg / PHYSICAL_REFERENCES.bowlingBallKg),
@@ -83,7 +77,6 @@ export function calculatePersonalImpact(kgPerYear, age) {
   };
 }
 
-// Returns a sorted list of country names from the waste CSV for dropdowns.
 export function getCountryList(wasteData) {
   return wasteData
     .filter((d) => d.Code && d.Entity)
