@@ -40,7 +40,25 @@ export const PHYSICAL_REFERENCES = {
 };
 
 export const HISTORICAL_MARKERS = [
-  { year: 1776, label: 'US Founded', offset: 0 },
-  { year: 1969, label: 'Moon Landing', offset: 0 },
-  { year: 1945, label: 'WWII Ends', offset: 0 },
+  { year: 1776, label: 'US Founded' },
+  { year: 1945, label: 'WWII Ends' },
+  { year: 1969, label: 'Moon Landing' },
 ];
+
+// Exact CSV column names from Our World in Data exports
+export const CSV_COLUMNS = {
+  production: 'Annual plastic production between 1950 and 2019',
+  wastePerCapita: 'Per capita plastic waste',
+  mismanagedPerCapita: 'Mismanaged plastic waste per capita',
+  oceanAccumulation: 'Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans',
+};
+
+// Paths relative to the Vite base (src/data is served as static assets via import)
+export const DATA_PATHS = {
+  production: new URL('../data/global-plastics-production.csv', import.meta.url).href,
+  wastePerCapita: new URL('../data/plastic-waste-per-capita.csv', import.meta.url).href,
+  mismanagedPerCapita: new URL('../data/mismanaged-plastic-waste-per-capita.csv', import.meta.url).href,
+  oceanAccumulation: new URL('../data/plastic-waste-accumulated-in-oceans.csv', import.meta.url).href,
+};
+
+export const WORLD_MAP_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
