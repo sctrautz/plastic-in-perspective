@@ -53,12 +53,13 @@ export const CSV_COLUMNS = {
   oceanAccumulation: 'Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans',
 };
 
-// Paths relative to the Vite base (src/data is served as static assets via import)
+// CSVs live in public/data/ — served at /plastic-in-perspective/data/ on GitHub Pages
+const BASE = import.meta.env.BASE_URL;
 export const DATA_PATHS = {
-  production: new URL('../data/global-plastics-production.csv', import.meta.url).href,
-  wastePerCapita: new URL('../data/plastic-waste-per-capita.csv', import.meta.url).href,
-  mismanagedPerCapita: new URL('../data/mismanaged-plastic-waste-per-capita.csv', import.meta.url).href,
-  oceanAccumulation: new URL('../data/plastic-waste-accumulated-in-oceans.csv', import.meta.url).href,
+  production: `${BASE}data/global-plastics-production.csv`,
+  wastePerCapita: `${BASE}data/plastic-waste-per-capita.csv`,
+  mismanagedPerCapita: `${BASE}data/mismanaged-plastic-waste-per-capita.csv`,
+  oceanAccumulation: `${BASE}data/plastic-waste-accumulated-in-oceans.csv`,
 };
 
 export const WORLD_MAP_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
