@@ -7,27 +7,32 @@ import WorldMap from './components/WorldMap/WorldMap';
 
 function Hero() {
   return (
-    <section className="min-h-screen flex flex-col justify-center px-6 pt-14">
+    <section className="relative min-h-screen flex flex-col justify-center px-6 pt-14">
       <div className="max-w-6xl mx-auto w-full">
-        <p className="text-xs tracking-widest uppercase text-slate-500 mb-6">
+        <p className="animate-fade-up text-xs tracking-widest uppercase text-slate-500 mb-6" style={{ animationDelay: '0.05s' }}>
           An interactive data visualization
         </p>
-        <h1 className="text-6xl md:text-8xl font-semibold leading-none tracking-tight text-slate-100 mb-8">
+        <h1 className="animate-fade-up text-6xl md:text-8xl font-semibold leading-none tracking-tight text-slate-100 mb-8" style={{ animationDelay: '0.2s' }}>
           Plastic in
           <br />
           <span className="text-ocean-400">Perspective</span>
         </h1>
-        <p className="text-xl md:text-2xl font-light text-slate-400 max-w-2xl leading-relaxed mb-12">
+        <p className="animate-fade-up text-xl md:text-2xl font-light text-slate-400 max-w-2xl leading-relaxed mb-12" style={{ animationDelay: '0.35s' }}>
           Every minute, the equivalent of a garbage truck of plastic enters
           the ocean. This is what that actually means.
         </p>
-        <div className="flex items-center gap-3 text-sm text-slate-600">
+        <div className="animate-fade-up flex items-center gap-3 text-sm text-slate-600" style={{ animationDelay: '0.5s' }}>
           <span>Scroll to explore</span>
           <div className="w-px h-4 bg-slate-700" />
           <span>4 visualizations</span>
           <div className="w-px h-4 bg-slate-700" />
           <span>All data from Our World in Data</span>
         </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="animate-fade-up absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ animationDelay: '0.9s' }}>
+        <div className="w-px h-10 bg-gradient-to-b from-slate-600 to-transparent" />
       </div>
     </section>
   );
