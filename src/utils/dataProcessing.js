@@ -19,7 +19,7 @@ export function calculatePlasticRate(productionData) {
     tonnesPerYear,
     tonnesPerSecond,
     tonnesPerMinute: tonnesPerSecond * 60,
-    trucksPerMinute: (tonnesPerSecond * 60) / PHYSICAL_REFERENCES.garbageTruckKg,
+    trucksPerMinute: (tonnesPerSecond * 1000 * 60) / PHYSICAL_REFERENCES.garbageTruckKg,
   };
 }
 
