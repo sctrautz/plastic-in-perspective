@@ -1,0 +1,38 @@
+{
+  "chart": {
+    "title": "Plastic waste accumulated in the oceans",
+    "subtitle": "The amount of plastic waste that has accumulated in the oceans since 1951. This is calculated as the running total of plastic flowing into the ocean each year.",
+    "note": "Regional definitions adhere to those specified by the [OECD](#dod:oecd-regions).",
+    "citation": "OECD (2022)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/plastic-waste-accumulated-in-oceans?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "India",
+      "Sub-Saharan Africa",
+      "Oceania",
+      "Middle East & North Africa",
+      "United States",
+      "Americas (excl. USA)",
+      "China",
+      "Europe",
+      "Asia (excl. China and India)"
+    ]
+  },
+  "columns": {
+    "Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans": {
+      "titleShort": "Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans",
+      "titleLong": "Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans",
+      "shortUnit": "t",
+      "unit": "tonnes",
+      "timespan": "2000-2019",
+      "type": "Numeric",
+      "owidVariableId": 814462,
+      "shortName": "value__leakage_type_accumulated_stock_in_oceans",
+      "lastUpdated": "2023-09-21",
+      "citationShort": "OECD (2022) – processed by Our World in Data",
+      "citationLong": "OECD (2022) – processed by Our World in Data. “Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans” [dataset]. OECD, “Global Plastics Outlook - Plastic leakage to aquatic environments” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/814462.metadata.json"
+    }
+  },
+  "dateDownloaded": "2026-03-02",
+  "activeFilters": {}
+}

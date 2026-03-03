@@ -1,0 +1,31 @@
+{
+  "chart": {
+    "title": "Global plastics production",
+    "subtitle": "Annual production of polymer resin and fibers.",
+    "citation": "Geyer et al. (2017); OECD (2022)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/global-plastics-production?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Annual plastic production between 1950 and 2019": {
+      "titleShort": "Annual plastic production between 1950 and 2019",
+      "titleLong": "Annual plastic production between 1950 and 2019",
+      "descriptionShort": "Annual production of polymer resin and fibers.",
+      "descriptionProcessing": "The data on plastic production from 1950 to 2015 are based on the research by Greyer et al., published in 2017. For the years 2016 to 2018, the figures were projected by applying a consistent annual growth rate of 5%, which aligns with the growth estimates provided by Geyer. The most recent data for the year 2019 has been directly sourced from the OECD Global Plastics Outlook, released in 2022.",
+      "shortUnit": "t",
+      "unit": "tonnes",
+      "timespan": "1950-2019",
+      "type": "Integer",
+      "owidVariableId": 814473,
+      "shortName": "plastic_production",
+      "lastUpdated": "2023-09-26",
+      "citationShort": "Geyer et al. (2017); OECD (2022) – with major processing by Our World in Data",
+      "citationLong": "Geyer et al. (2017); OECD (2022) – with major processing by Our World in Data. “Annual plastic production between 1950 and 2019” [dataset]. Geyer et al., “Production, use, and fate of all plastics ever made”; OECD, “Global Plastics Outlook - Plastics use by application” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/814473.metadata.json"
+    }
+  },
+  "dateDownloaded": "2026-03-02",
+  "activeFilters": {}
+}

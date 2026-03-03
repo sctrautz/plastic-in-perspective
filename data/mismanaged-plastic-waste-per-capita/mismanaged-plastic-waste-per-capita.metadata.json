@@ -1,0 +1,37 @@
+{
+  "chart": {
+    "title": "Mismanaged plastic waste per capita",
+    "subtitle": "Mismanaged plastic waste is waste that is not recycled, incinerated, or kept in sealed landfills. It includes materials burned in open pits, dumped into seas or open waters, or disposed of in unsanitary landfills and dumpsites.",
+    "citation": "Meijer et al. (2021).",
+    "originalChartUrl": "https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "Gambia",
+      "Senegal",
+      "Japan",
+      "Morocco",
+      "Myanmar",
+      "China",
+      "India",
+      "Indonesia",
+      "Brazil",
+      "Chile",
+      "United States",
+      "United Kingdom"
+    ]
+  },
+  "columns": {
+    "Mismanaged plastic waste per capita (kg per year)": {
+      "titleShort": "Mismanaged plastic waste per capita",
+      "titleLong": "Mismanaged plastic waste per capita",
+      "unit": "",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 146461,
+      "citationShort": " – processed by Our World in Data",
+      "citationLong": " – processed by Our World in Data. “Mismanaged plastic waste per capita” [dataset]. Meijer et al. (2021). More than 1000 rivers account for 80% of global riverine plastic emissions into the ocean. Science Advances. [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/146461.metadata.json"
+    }
+  },
+  "dateDownloaded": "2026-03-02",
+  "activeFilters": {}
+}

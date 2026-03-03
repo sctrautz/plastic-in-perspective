@@ -358,7 +358,7 @@ export default function PlasticClock() {
       <div className="grid grid-cols-3 gap-px bg-white/5 rounded-lg overflow-hidden border border-white/5">
         {[
           { value: d3.format(',.2f')(rate?.tonnesPerSecond ?? 0), unit: 'tonnes', label: 'per second' },
-          { value: d3.format(',.0f')(rate?.trucksPerMinute ?? 0), unit: 'trucks', label: 'per minute' },
+          { value: d3.format(',.0f')(rate?.trucksPerMinute ?? 0), unit: 'full garbage trucks', label: 'produced per minute' },
           {
             value: d3.format(',.0f')((rate?.tonnesPerYear ?? 0) / 1e6) + 'M',
             unit: 'tonnes',

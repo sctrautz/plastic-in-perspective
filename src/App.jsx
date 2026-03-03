@@ -18,15 +18,11 @@ function Hero() {
           <span className="text-ocean-400">Perspective</span>
         </h1>
         <p className="animate-fade-up text-xl md:text-2xl font-light text-slate-400 max-w-2xl leading-relaxed mb-12" style={{ animationDelay: '0.35s' }}>
-          Every minute, the equivalent of a garbage truck of plastic enters
-          the ocean. This is what that actually means.
+          Plastic was engineered to be permanent. We decided to use it
+          for things we throw away.
         </p>
-        <div className="animate-fade-up flex items-center gap-3 text-sm text-slate-600" style={{ animationDelay: '0.5s' }}>
-          <span>Scroll to explore</span>
-          <div className="w-px h-4 bg-slate-700" />
-          <span>4 visualizations</span>
-          <div className="w-px h-4 bg-slate-700" />
-          <span>All data from Our World in Data</span>
+        <div className="animate-fade-up text-sm text-slate-600" style={{ animationDelay: '0.5s' }}>
+          <span>Production &amp; waste data from Our World in Data · Decomposition times from NOAA, EPA &amp; NPS</span>
         </div>
       </div>
 
@@ -80,14 +76,14 @@ export default function App() {
             Where Does It Go?
           </h2>
           <p className="text-slate-400 text-lg mb-10 max-w-xl">
-            Plastic waste generation and ocean pollution, by country.
+            Plastic waste generation and mismanaged waste, by country.
           </p>
           <WorldMap />
         </ScrollySection>
 
         <footer className="border-t border-white/5 py-12 px-6">
           <div className="max-w-6xl mx-auto text-center text-xs text-slate-600 space-y-2">
-            <p>Data sourced from Our World in Data — Hannah Ritchie and Max Roser (2018)</p>
+            <p>Production &amp; waste data: Our World in Data — Ritchie &amp; Roser (2018) · Decomposition times: NOAA Marine Debris Program, EPA, National Park Service, UNESCO</p>
             <p>Built with React, D3.js, and Tailwind CSS</p>
           </div>
         </footer>

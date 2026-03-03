@@ -62,7 +62,7 @@ export default function WorldMap() {
       { cls: 'l', cx: CX_L, proj: projLRef.current, path: pathLRef.current,
         label: 'Waste Generated',   sub: 'kg / person / day',           color: '#4a90d9' },
       { cls: 'r', cx: CX_R, proj: projRRef.current, path: pathRRef.current,
-        label: 'Ocean Pollution',   sub: 'mismanaged kg / person / year', color: '#e05c40' },
+        label: 'Mismanaged Waste',  sub: 'mismanaged kg / person / year', color: '#e05c40' },
     ];
 
     SIDES.forEach(({ cls, cx, proj, path, label, sub, color }) => {
@@ -208,7 +208,7 @@ export default function WorldMap() {
         <p className="text-xl font-light text-slate-300 leading-relaxed">
           Rich countries generate the most plastic waste.{' '}
           <span className="text-slate-100 font-normal">Poor countries</span>{' '}
-          deal with the consequences.
+          have the least capacity to manage it.
         </p>
       </blockquote>
 

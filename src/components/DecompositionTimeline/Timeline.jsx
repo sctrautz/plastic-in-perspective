@@ -16,7 +16,7 @@ const ITEMS = [
 const CIVS = [
   { label: 'Human lifespan', years: 80,  color: '#6b7280', note: '~80 years'  },
   { label: 'Ming Dynasty',   years: 276, color: '#7a8c5e', note: '1368–1644'  },
-  { label: 'British Empire', years: 400, color: '#5e7a8c', note: '~400 years' },
+  { label: 'British Empire', years: 400, color: '#5e7a8c', note: '1583–1997' },
   { label: 'Roman Empire',   years: 503, color: '#8c7a5e', note: '27BC–476AD' },
   { label: 'Ottoman Empire', years: 623, color: '#8c5e5e', note: '1299–1922'  },
 ];
