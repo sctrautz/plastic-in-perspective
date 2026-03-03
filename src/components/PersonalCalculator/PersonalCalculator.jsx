@@ -8,193 +8,97 @@ import {
 } from '../../utils/dataProcessing';
 
 const MAX_AGE = 80;
-const W = 900;
-const H = 300;
-const M = { top: 16, right: 24, bottom: 36, left: 56 };
-const IW = W - M.left - M.right;
-const IH = H - M.top - M.bottom;
+const BODY_KG = 70;
+const BODY_R = 40;
+const MAX_R = 148;
+const SVG_W = 700;
+const SVG_H = 360;
+const BODY_CX = 155;
+const PLASTIC_CX = 490;
+const CY = 172;
 
-function LifetimeChart({ kgPerDay, age }) {
+function circleR(bodyWeights) {
+  return Math.min(MAX_R, Math.max(16, BODY_R * Math.sqrt(Math.max(0.01, bodyWeights))));
+}
+
+function CircleViz({ impact }) {
   const svgRef = useRef();
-  const initializedRef = useRef(false);
+  const prevKgRef = useRef(null);
 
   useEffect(() => {
-    if (!svgRef.current || !kgPerDay) return;
+    if (!svgRef.current || !impact) return;
 
-    const kgPerYear = kgPerDay * 365;
     const svg = d3.select(svgRef.current);
+    const r = circleR(impact.bodyWeights);
 
-    const x = d3.scaleLinear().domain([0, MAX_AGE]).range([0, IW]);
-    const y = d3.scaleLinear().domain([0, kgPerYear * MAX_AGE]).range([IH, 0]);
-
-    const fullData = d3.range(0, MAX_AGE + 1).map((a) => ({ age: a, kg: a * kgPerYear }));
-    const ageData = d3.range(0, age + 1).map((a) => ({ age: a, kg: a * kgPerYear }));
-
-    const areaFn = (data) =>
-      d3.area()
-        .x((d) => x(d.age))
-        .y0(IH)
-        .y1((d) => y(d.kg))
-        .curve(d3.curveCatmullRom)(data);
-
-    const lineFn = (data) =>
-      d3.line()
-        .x((d) => x(d.age))
-        .y((d) => y(d.kg))
-        .curve(d3.curveCatmullRom)(data);
-
-    if (!initializedRef.current) {
-      // First render — build the SVG skeleton
-      svg.selectAll('*').remove();
-
-      const g = svg.append('g')
-        .attr('transform', `translate(${M.left},${M.top})`);
-
-      // Axes
-      g.append('g')
-        .attr('class', 'axis-x')
-        .attr('transform', `translate(0,${IH})`)
-        .call(
-          d3.axisBottom(x)
-            .ticks(8)
-            .tickSize(0)
-            .tickPadding(10)
-        )
-        .call((a) => a.select('.domain').attr('stroke', '#30363d'))
-        .call((a) => a.selectAll('text').attr('fill', '#484f58').attr('font-size', 11));
-
-      g.append('g')
-        .attr('class', 'axis-y')
-        .call(
-          d3.axisLeft(y)
-            .ticks(5)
-            .tickSize(-IW)
-            .tickFormat((v) => `${d3.format(',.0f')(v)} kg`)
-        )
-        .call((a) => a.select('.domain').remove())
-        .call((a) => a.selectAll('.tick line').attr('stroke', '#21262d').attr('stroke-dasharray', '3,3'))
-        .call((a) => a.selectAll('text').attr('fill', '#484f58').attr('font-size', 11));
-
-      // Axis labels
-      g.append('text')
-        .attr('x', IW / 2)
-        .attr('y', IH + 34)
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#484f58')
-        .attr('font-size', 11)
-        .text('Age');
-
-      // Gradient
+    if (svg.selectAll('.body-circle').empty()) {
       const defs = svg.append('defs');
-      const grad = defs.append('linearGradient')
-        .attr('id', 'calc-grad')
-        .attr('x1', 0).attr('x2', 0)
-        .attr('y1', 0).attr('y2', 1);
-      grad.append('stop').attr('offset', '0%').attr('stop-color', '#2272c3').attr('stop-opacity', 0.35);
-      grad.append('stop').attr('offset', '100%').attr('stop-color', '#2272c3').attr('stop-opacity', 0.02);
+      const glow = defs.append('filter').attr('id', 'circ-glow').attr('x', '-40%').attr('y', '-40%').attr('width', '180%').attr('height', '180%');
+      glow.append('feGaussianBlur').attr('in', 'SourceGraphic').attr('stdDeviation', '8').attr('result', 'blur');
+      const m = glow.append('feMerge');
+      m.append('feMergeNode').attr('in', 'blur');
+      m.append('feMergeNode').attr('in', 'SourceGraphic');
 
-      // Ghost: full 80-year area
-      g.append('path')
-        .attr('class', 'area-ghost')
-        .attr('d', areaFn(fullData))
-        .attr('fill', '#21262d');
+      svg.append('circle').attr('class', 'body-circle')
+        .attr('cx', BODY_CX).attr('cy', CY).attr('r', BODY_R)
+        .attr('fill', '#0d1f3c').attr('stroke', '#1a3f72').attr('stroke-width', 1.5);
 
-      // Active: filled to current age
-      g.append('path')
-        .attr('class', 'area-active')
-        .attr('d', areaFn(ageData))
-        .attr('fill', 'url(#calc-grad)');
+      svg.append('text').attr('class', 'body-kg')
+        .attr('x', BODY_CX).attr('y', CY).attr('dy', '0.35em')
+        .attr('text-anchor', 'middle').attr('fill', '#4a90d9').attr('font-size', 12)
+        .text(`${BODY_KG} kg`);
 
-      g.append('path')
-        .attr('class', 'line-active')
-        .attr('d', lineFn(ageData))
-        .attr('fill', 'none')
-        .attr('stroke', '#4a90d9')
-        .attr('stroke-width', 1.5);
+      svg.append('text').attr('class', 'body-label')
+        .attr('x', BODY_CX).attr('y', CY + BODY_R + 18)
+        .attr('text-anchor', 'middle').attr('fill', '#484f58').attr('font-size', 10)
+        .attr('letter-spacing', '0.1em').text('YOUR BODY');
 
-      // Current age marker (vertical line)
-      g.append('line')
-        .attr('class', 'age-marker')
-        .attr('x1', x(age)).attr('x2', x(age))
-        .attr('y1', 0).attr('y2', IH)
-        .attr('stroke', '#4a90d9')
-        .attr('stroke-width', 1)
-        .attr('stroke-dasharray', '4,3')
-        .attr('opacity', 0.5);
+      svg.append('circle').attr('class', 'plastic-circle')
+        .attr('cx', PLASTIC_CX).attr('cy', CY).attr('r', r)
+        .attr('fill', '#1e5799').attr('fill-opacity', 0.55)
+        .attr('stroke', '#4a90d9').attr('stroke-width', 1.5).attr('stroke-opacity', 0.6)
+        .attr('filter', 'url(#circ-glow)');
 
-      // Age marker label
-      g.append('text')
-        .attr('class', 'age-label')
-        .attr('x', x(age))
-        .attr('y', -4)
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#4a90d9')
-        .attr('font-size', 11)
-        .text(`Age ${age}`);
+      svg.append('text').attr('class', 'plastic-kg')
+        .attr('x', PLASTIC_CX).attr('y', CY).attr('dy', '0.35em')
+        .attr('text-anchor', 'middle').attr('fill', '#7db5e8').attr('font-size', 14)
+        .text(`${d3.format(',.0f')(impact.lifetimeKg)} kg`);
 
-      initializedRef.current = true;
+      svg.append('text').attr('class', 'plastic-label')
+        .attr('x', PLASTIC_CX).attr('y', CY + r + 18)
+        .attr('text-anchor', 'middle').attr('fill', '#484f58').attr('font-size', 10)
+        .attr('letter-spacing', '0.1em').text('LIFETIME PLASTIC');
+
+      prevKgRef.current = impact.lifetimeKg;
     } else {
-      // Update — transition paths and axes
-      const g = svg.select('g');
+      const prevKg = prevKgRef.current ?? impact.lifetimeKg;
 
-      // Rebuild y scale for new country (kgPerDay may have changed)
-      const newY = d3.scaleLinear().domain([0, kgPerYear * MAX_AGE]).range([IH, 0]);
+      svg.select('.plastic-circle')
+        .transition().duration(700).ease(d3.easeCubicOut)
+        .attr('r', r);
 
-      g.select('.axis-y')
-        .transition().duration(600)
-        .call(
-          d3.axisLeft(newY)
-            .ticks(5)
-            .tickSize(-IW)
-            .tickFormat((v) => `${d3.format(',.0f')(v)} kg`)
-        )
-        .call((a) => a.select('.domain').remove())
-        .call((a) => a.selectAll('.tick line').attr('stroke', '#21262d').attr('stroke-dasharray', '3,3'))
-        .call((a) => a.selectAll('text').attr('fill', '#484f58').attr('font-size', 11));
+      svg.select('.plastic-label')
+        .transition().duration(700).ease(d3.easeCubicOut)
+        .attr('y', CY + r + 18);
 
-      const areaFnNew = (data) =>
-        d3.area()
-          .x((d) => x(d.age))
-          .y0(IH)
-          .y1((d) => newY(d.kg))
-          .curve(d3.curveCatmullRom)(data);
+      svg.select('.plastic-kg')
+        .transition().duration(700)
+        .tween('text', function () {
+          const interp = d3.interpolateNumber(prevKg, impact.lifetimeKg);
+          return (t) => d3.select(this).text(`${d3.format(',.0f')(interp(t))} kg`);
+        });
 
-      const lineFnNew = (data) =>
-        d3.line()
-          .x((d) => x(d.age))
-          .y((d) => newY(d.kg))
-          .curve(d3.curveCatmullRom)(data);
-
-      const fullDataNew = d3.range(0, MAX_AGE + 1).map((a) => ({ age: a, kg: a * kgPerYear }));
-      const ageDataNew = d3.range(0, age + 1).map((a) => ({ age: a, kg: a * kgPerYear }));
-
-      g.select('.area-ghost').transition().duration(600).attr('d', areaFnNew(fullDataNew));
-      g.select('.area-active').transition().duration(600).attr('d', areaFnNew(ageDataNew));
-      g.select('.line-active').transition().duration(600).attr('d', lineFnNew(ageDataNew));
-
-      g.select('.age-marker')
-        .transition().duration(400)
-        .attr('x1', x(age)).attr('x2', x(age));
-
-      g.select('.age-label')
-        .transition().duration(400)
-        .attr('x', x(age))
-        .text(`Age ${age}`);
+      prevKgRef.current = impact.lifetimeKg;
     }
-  }, [kgPerDay, age]);
-
-  // Reset when kgPerDay changes (new country) so axes rebuild cleanly
-  useEffect(() => {
-    initializedRef.current = false;
-  }, [kgPerDay]);
+  }, [impact]);
 
   return (
     <svg
       ref={svgRef}
-      viewBox={`0 0 ${W} ${H}`}
+      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
       preserveAspectRatio="xMidYMid meet"
       className="w-full"
-      style={{ height: '260px' }}
+      style={{ maxHeight: '300px' }}
     />
   );
 }
@@ -220,11 +124,7 @@ export default function PersonalCalculator() {
   }, [kgPerDay, age]);
 
   if (loading) {
-    return (
-      <div className="h-96 flex items-center justify-center text-slate-600 text-sm tracking-widest uppercase">
-        Loading
-      </div>
-    );
+    return <div className="h-96 flex items-center justify-center text-slate-600 text-sm tracking-widest uppercase">Loading</div>;
   }
 
   return (
@@ -232,7 +132,6 @@ export default function PersonalCalculator() {
 
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-6">
-        {/* Country dropdown */}
         <div className="flex flex-col gap-2">
           <label className="text-xs uppercase tracking-widest text-slate-600">Country</label>
           <div className="relative">
@@ -253,63 +152,60 @@ export default function PersonalCalculator() {
           </div>
         </div>
 
-        {/* Age slider */}
         <div className="flex flex-col gap-2 flex-1 max-w-xs">
           <label className="text-xs uppercase tracking-widest text-slate-600">
             Age — <span className="text-slate-300">{age}</span>
           </label>
           <input
-            type="range"
-            min={1}
-            max={MAX_AGE}
-            value={age}
+            type="range" min={1} max={MAX_AGE} value={age}
             onChange={(e) => setAge(+e.target.value)}
-            className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer
-              [&::-webkit-slider-thumb]:appearance-none
-              [&::-webkit-slider-thumb]:w-4
-              [&::-webkit-slider-thumb]:h-4
-              [&::-webkit-slider-thumb]:rounded-full
-              [&::-webkit-slider-thumb]:bg-ocean-400
-              [&::-webkit-slider-thumb]:cursor-pointer
-              [&::-moz-range-thumb]:w-4
-              [&::-moz-range-thumb]:h-4
-              [&::-moz-range-thumb]:rounded-full
-              [&::-moz-range-thumb]:bg-ocean-400
-              [&::-moz-range-thumb]:border-0
-              [&::-moz-range-thumb]:cursor-pointer"
-            style={{ marginTop: '6px' }}
+            className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer mt-1.5
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4
+              [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full
+              [&::-webkit-slider-thumb]:bg-ocean-400 [&::-webkit-slider-thumb]:cursor-pointer
+              [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4
+              [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-ocean-400
+              [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
           />
-          <div className="flex justify-between text-xs text-slate-700">
-            <span>1</span><span>80</span>
-          </div>
+          <div className="flex justify-between text-xs text-slate-700"><span>1</span><span>80</span></div>
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="border border-white/5 rounded-lg bg-white/[0.015] px-4 pt-4 pb-2">
-        {kgPerDay ? (
-          <LifetimeChart kgPerDay={kgPerDay} age={age} />
-        ) : (
-          <div className="h-64 flex items-center justify-center text-slate-600 text-sm">
-            No data for {country}
+      {/* Headline stat */}
+      {impact && (
+        <div className="text-center py-2">
+          <div className="text-[clamp(3.5rem,10vw,6.5rem)] font-bold tabular-nums leading-none text-slate-100 tracking-tight">
+            {d3.format(',.1f')(impact.bodyWeights)}
+            <span className="text-2xl font-light text-slate-500 ml-2">×</span>
           </div>
-        )}
-        <p className="text-xs text-slate-700 text-right mt-1 pr-1">
-          cumulative plastic waste generated by age
-        </p>
-      </div>
+          <p className="mt-3 text-slate-400 font-light">
+            your body weight in plastic waste by age {age}
+          </p>
+        </div>
+      )}
 
-      {/* Stats grid */}
+      {/* Circle comparison */}
+      {kgPerDay ? (
+        <div className="border border-white/5 rounded-lg bg-white/[0.015] px-4 py-2">
+          <CircleViz impact={impact} />
+        </div>
+      ) : (
+        <div className="h-64 flex items-center justify-center text-slate-600 text-sm border border-white/5 rounded-lg">
+          No data for {country}
+        </div>
+      )}
+
+      {/* Stats strip */}
       {impact && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 border border-white/5 rounded-lg overflow-hidden">
           {[
-            { value: d3.format(',.0f')(impact.kgPerYear), unit: 'kg/year', label: 'Waste generated' },
+            { value: d3.format(',.0f')(impact.kgPerYear), unit: 'kg / year', label: 'Waste generated' },
             { value: d3.format(',.0f')(impact.lifetimeKg), unit: 'kg total', label: `By age ${age}` },
-            { value: d3.format(',.0f')(impact.bottlesPerYear), unit: 'bottles', label: 'Per year' },
-            { value: d3.format(',.1f')(impact.bodyWeights) + '×', unit: 'your body weight', label: `By age ${age}` },
+            { value: d3.format(',.0f')(impact.bottlesPerYear), unit: 'bottles', label: 'Equivalent per year' },
+            { value: d3.format(',.3f')(impact.kgPerDay), unit: 'kg / day', label: 'Daily waste' },
           ].map(({ value, unit, label }) => (
-            <div key={label + unit} className="bg-[#0d1117] px-5 py-5">
-              <div className="flex items-baseline gap-2">
+            <div key={label} className="bg-[#0d1117] px-5 py-5">
+              <div className="flex items-baseline gap-2 flex-wrap">
                 <span className="text-2xl font-semibold tabular-nums text-slate-100">{value}</span>
                 <span className="text-xs text-slate-500">{unit}</span>
               </div>

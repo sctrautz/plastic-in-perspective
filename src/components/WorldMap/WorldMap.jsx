@@ -8,29 +8,11 @@ import { ISO_A3_TO_NUM } from '../../utils/isoLookup';
 
 const MAP_W = 960;
 const MAP_H = 500;
-const NO_DATA_COLOR = '#21262d';
 
 const MODES = [
-  {
-    id: 'waste',
-    label: 'Waste Generated',
-    field: 'wastePerCapita',
-    unit: 'kg / person / day',
-    percentile: 0.98,
-    interpolator: d3.interpolateBlues,
-  },
-  {
-    id: 'mismanaged',
-    label: 'Pollution Emitted',
-    field: 'mismanagedPerCapita',
-    unit: 'kg / person / year',
-    percentile: 0.95,
-    interpolator: d3.interpolateBlues,
-  },
+  { id: 'waste',      label: 'Waste Generated',  field: 'wastePerCapita',      unit: 'kg / person / day',  percentile: 0.97 },
+  { id: 'mismanaged', label: 'Pollution Emitted', field: 'mismanagedPerCapita', unit: 'kg / person / year', percentile: 0.95 },
 ];
-
-const LEGEND_W = 140;
-const LEGEND_H = 8;
 
 export default function WorldMap() {
   const svgRef = useRef();
@@ -54,18 +36,34 @@ export default function WorldMap() {
     return map;
   }, [data]);
 
+  // Draw country outlines once
+  useEffect(() => {
+    if (!geoData || !svgRef.current) return;
+
+    const svg = d3.select(svgRef.current);
+    const projection = d3.geoNaturalEarth1().scale(153).translate([MAP_W / 2, MAP_H / 2 - 10]);
+    const path = d3.geoPath(projection);
+    const countries = topojson.feature(geoData, geoData.objects.countries);
+
+    svg.append('g').attr('class', 'outlines')
+      .selectAll('path')
+      .data(countries.features)
+      .join('path')
+      .attr('d', path)
+      .attr('fill', '#0a1628')
+      .attr('stroke', '#1a2d4a')
+      .attr('stroke-width', 0.4);
+  }, [geoData]);
+
+  // Draw/update bubbles
   useEffect(() => {
     if (!geoData || !byNumeric || !svgRef.current) return;
 
     const cfg = MODES.find((m) => m.id === mode);
-    const { field, percentile, interpolator, unit } = cfg;
+    const { field, percentile } = cfg;
 
     const svg = d3.select(svgRef.current);
-
-    const projection = d3.geoNaturalEarth1()
-      .scale(153)
-      .translate([MAP_W / 2, MAP_H / 2 - 10]);
-
+    const projection = d3.geoNaturalEarth1().scale(153).translate([MAP_W / 2, MAP_H / 2 - 10]);
     const path = d3.geoPath(projection);
     const countries = topojson.feature(geoData, geoData.objects.countries);
 
@@ -75,86 +73,75 @@ export default function WorldMap() {
       .sort(d3.ascending);
     const maxVal = d3.quantile(values, percentile);
 
-    const colorScale = d3.scaleSequential()
-      .domain([0, maxVal])
-      .interpolator(interpolator);
+    const rScale = d3.scaleSqrt().domain([0, maxVal]).range([0, 34]);
 
-    // Country fills
-    const paths = svg.selectAll('.country')
-      .data(countries.features, (d) => d.id)
-      .join('path')
-      .attr('class', 'country')
-      .attr('d', path)
-      .attr('stroke', '#0d1117')
-      .attr('stroke-width', 0.3)
+    const bubbleData = countries.features
+      .map((f) => {
+        const country = byNumeric[+f.id];
+        if (!country || country[field] == null || country[field] <= 0) return null;
+        const centroid = path.centroid(f);
+        if (!centroid || isNaN(centroid[0]) || isNaN(centroid[1])) return null;
+        return { id: +f.id, centroid, value: country[field], entity: country.entity, ...country };
+      })
+      .filter(Boolean);
+
+    // Ensure bubbles layer is on top of outlines
+    let bubblesG = svg.select('.bubbles');
+    if (bubblesG.empty()) bubblesG = svg.append('g').attr('class', 'bubbles');
+
+    bubblesG.selectAll('.bubble')
+      .data(bubbleData, (d) => d.id)
+      .join(
+        (enter) =>
+          enter.append('circle').attr('class', 'bubble')
+            .attr('cx', (d) => d.centroid[0])
+            .attr('cy', (d) => d.centroid[1])
+            .attr('r', 0),
+        (update) => update,
+        (exit) => exit.transition().duration(300).attr('r', 0).remove()
+      )
+      .attr('fill', '#2272c3')
+      .attr('fill-opacity', 0.55)
+      .attr('stroke', '#7db5e8')
+      .attr('stroke-width', 0.7)
+      .attr('stroke-opacity', 0.45)
       .style('cursor', 'pointer')
       .on('mousemove', function (event, d) {
-        const country = byNumeric[d.id];
-        if (!country) return;
         const [mx, my] = d3.pointer(event, svgRef.current.closest('.map-container'));
-        setTooltip({ x: mx, y: my, country });
+        setTooltip({ x: mx, y: my, country: d });
       })
-      .on('mouseleave', () => setTooltip(null));
+      .on('mouseleave', () => setTooltip(null))
+      .transition().duration(700).ease(d3.easeCubicOut)
+      .attr('r', (d) => rScale(d.value));
 
-    paths.transition().duration(500)
-      .attr('fill', (d) => {
-        const country = byNumeric[d.id];
-        if (!country || country[field] == null) return NO_DATA_COLOR;
-        return colorScale(country[field]);
-      });
-
-    // Philippines annotation (mismanaged mode only)
-    svg.selectAll('.annotation').remove();
-    if (mode === 'mismanaged') {
-      const [px, py] = projection([122, 12]);
-      const ann = svg.append('g').attr('class', 'annotation');
-      ann.append('circle')
-        .attr('cx', px).attr('cy', py).attr('r', 3)
-        .attr('fill', '#c97b3a').attr('pointer-events', 'none');
-      ann.append('line')
-        .attr('x1', px).attr('y1', py)
-        .attr('x2', px - 55).attr('y2', py - 28)
-        .attr('stroke', '#c97b3a').attr('stroke-width', 0.8)
-        .attr('pointer-events', 'none');
-      ann.append('text')
-        .attr('x', px - 58).attr('y', py - 31)
-        .attr('text-anchor', 'end')
-        .attr('fill', '#c97b3a')
-        .attr('font-size', 10)
-        .attr('pointer-events', 'none')
-        .text('Philippines — highest mismanaged waste per capita');
-    }
-
-    // Legend
+    // Bubble size legend
     svg.selectAll('.legend').remove();
-    const lg = svg.append('g')
-      .attr('class', 'legend')
-      .attr('transform', `translate(16, ${MAP_H - 36})`);
+    const lg = svg.append('g').attr('class', 'legend')
+      .attr('transform', `translate(20, ${MAP_H - 70})`);
 
-    const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
-    defs.selectAll('#map-grad').remove();
-    const grad = defs.append('linearGradient').attr('id', 'map-grad');
-    grad.append('stop').attr('offset', '0%').attr('stop-color', colorScale(0));
-    grad.append('stop').attr('offset', '100%').attr('stop-color', colorScale(maxVal));
-
-    lg.append('rect')
-      .attr('width', LEGEND_W).attr('height', LEGEND_H).attr('rx', 2)
-      .attr('fill', 'url(#map-grad)');
-
+    const legendVals = [maxVal * 0.25, maxVal * 0.6, maxVal].filter(Boolean);
+    let lx = 0;
+    legendVals.forEach((v) => {
+      const r = rScale(v);
+      lx += r;
+      lg.append('circle')
+        .attr('cx', lx).attr('cy', 34 - r)
+        .attr('r', r)
+        .attr('fill', 'none')
+        .attr('stroke', '#30363d')
+        .attr('stroke-width', 0.8);
+      lg.append('text')
+        .attr('x', lx).attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#484f58').attr('font-size', 9)
+        .text(d3.format(',.2~g')(v));
+      lx += r + 8;
+    });
     lg.append('text')
-      .attr('y', LEGEND_H + 12).attr('fill', '#484f58').attr('font-size', 10)
-      .text('0');
-
-    lg.append('text')
-      .attr('x', LEGEND_W).attr('y', LEGEND_H + 12)
-      .attr('text-anchor', 'end').attr('fill', '#484f58').attr('font-size', 10)
-      .text(`${d3.format(',.2f')(maxVal)}+`);
-
-    lg.append('text')
-      .attr('x', LEGEND_W / 2).attr('y', -5)
-      .attr('text-anchor', 'middle').attr('fill', '#484f58').attr('font-size', 10)
-      .text(unit);
-
+      .attr('x', 0).attr('y', 54)
+      .attr('fill', '#30363d').attr('font-size', 9)
+      .attr('letter-spacing', '0.08em')
+      .text(cfg.unit.toUpperCase());
   }, [geoData, byNumeric, mode]);
 
   const isReady = !loading && geoData && byNumeric;
@@ -194,16 +181,17 @@ export default function WorldMap() {
           style={{ height: 'auto', display: isReady ? 'block' : 'none' }}
         />
 
-        {/* Tooltip */}
         {tooltip && (
           <div
             className="pointer-events-none absolute bg-[#161b22] border border-white/10 rounded px-3 py-2 text-xs"
-            style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
+            style={{ left: tooltip.x + 12, top: tooltip.y - 10, maxWidth: 200 }}
           >
             <div className="text-slate-200 font-medium mb-1">{tooltip.country.entity}</div>
-            <div className="text-slate-500">
-              Waste: {d3.format(',.3f')(tooltip.country.wastePerCapita)} kg/day
-            </div>
+            {tooltip.country.wastePerCapita != null && (
+              <div className="text-slate-500">
+                Waste: {d3.format(',.3f')(tooltip.country.wastePerCapita)} kg/day
+              </div>
+            )}
             {tooltip.country.mismanagedPerCapita != null && (
               <div className="text-slate-500">
                 Mismanaged: {d3.format(',.1f')(tooltip.country.mismanagedPerCapita)} kg/yr
