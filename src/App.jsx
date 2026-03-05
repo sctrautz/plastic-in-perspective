@@ -84,7 +84,7 @@ export default function App() {
         <section className="border-t border-white/5 py-20 px-6">
           <div className="max-w-4xl mx-auto space-y-6">
             <h2 className="text-4xl md:text-5xl font-semibold text-slate-100">Screencast</h2>
-            <p className="text-slate-400 text-lg max-w-xl">A two-minute walkthrough of the project.</p>
+            <p className="text-slate-400 text-lg max-w-xl">A walkthrough of the project.</p>
             <div className="relative w-full rounded-lg overflow-hidden border border-white/5" style={{ paddingBottom: '56.25%' }}>
               <iframe
                 className="absolute inset-0 w-full h-full"
@@ -99,16 +99,16 @@ export default function App() {
         </section>
 
         <footer className="border-t border-white/5 py-12 px-6">
-          <div className="max-w-6xl mx-auto text-center text-xs text-slate-600 space-y-2">
-            <p>Production &amp; waste data: Our World in Data — Ritchie &amp; Roser (2018) · Decomposition times: NOAA Marine Debris Program, EPA, National Park Service, UNESCO</p>
-            <p>Built with React, D3.js, and Tailwind CSS</p>
-            <p className="pt-2 space-x-4">
-              <a href="https://github.com/sctrautz/plastic-in-perspective/blob/main/Process%20Book%20Outline.pdf" target="_blank" rel="noreferrer" className="hover:text-slate-400 transition-colors">Process Book</a>
-              <span>·</span>
-              <a href="https://github.com/sctrautz/plastic-in-perspective/tree/main/public/data" target="_blank" rel="noreferrer" className="hover:text-slate-400 transition-colors">Data</a>
-              <span>·</span>
-              <a href="https://github.com/sctrautz/plastic-in-perspective" target="_blank" rel="noreferrer" className="hover:text-slate-400 transition-colors">GitHub</a>
-            </p>
+          <div className="max-w-6xl mx-auto text-center space-y-4">
+            <div className="flex justify-center gap-8 text-sm text-slate-400">
+              <a href="https://github.com/sctrautz/plastic-in-perspective/blob/main/Process%20Book%20Outline.pdf" target="_blank" rel="noreferrer" className="hover:text-slate-100 transition-colors">Process Book</a>
+              <a href="https://github.com/sctrautz/plastic-in-perspective/tree/main/public/data" target="_blank" rel="noreferrer" className="hover:text-slate-100 transition-colors">Data</a>
+              <a href="https://github.com/sctrautz/plastic-in-perspective" target="_blank" rel="noreferrer" className="hover:text-slate-100 transition-colors">GitHub</a>
+            </div>
+            <div className="text-xs text-slate-600 space-y-1">
+              <p>Production &amp; waste data: Our World in Data — Ritchie &amp; Roser (2018) · Decomposition times: NOAA Marine Debris Program, EPA, National Park Service, UNESCO</p>
+              <p>Built with React, D3.js, and Tailwind CSS</p>
+            </div>
           </div>
         </footer>
       </main>
