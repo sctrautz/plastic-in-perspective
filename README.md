@@ -50,7 +50,7 @@ public/data/
   plastic-waste-per-capita.csv
   mismanaged-plastic-waste-per-capita.csv
 
-Process Book Outline (1).pdf
+Process Book Outline.pdf
 ```
 
 ---
