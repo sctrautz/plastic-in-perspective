@@ -43,7 +43,7 @@ export default function WorldMap() {
   // Load TopoJSON
   useEffect(() => { d3.json(WORLD_MAP_URL).then(setGeoData); }, []);
 
-  // ── Effect 1: build static SVG skeleton ──────────────────────────────────
+  // ── Effect 1: build static SVG skeleton
   useEffect(() => {
     if (!geoData || !svgRef.current) return;
 
@@ -105,7 +105,7 @@ export default function WorldMap() {
 
   }, [geoData]);
 
-  // ── Effect 2: place bubbles once data is ready ────────────────────────────
+  // ── Effect 2:
   useEffect(() => {
     if (!geoData || !mergedData || !svgRef.current) return;
     if (!projLRef.current || !projRRef.current) return;
@@ -160,7 +160,7 @@ export default function WorldMap() {
     });
   }, [geoData, mergedData]);
 
-  // ── Effect 3: rotation timer ──────────────────────────────────────────────
+  // ── Effect 3: rotation timer
   useEffect(() => {
     if (!geoData || !mergedData || !svgRef.current) return;
     if (!projLRef.current || !projRRef.current) return;

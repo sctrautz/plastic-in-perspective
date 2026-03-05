@@ -4,7 +4,6 @@ const {
   production: COL_PRODUCTION,
   wastePerCapita: COL_WASTE,
   mismanagedPerCapita: COL_MISMANAGED,
-  oceanAccumulation: COL_OCEAN,
 } = CSV_COLUMNS;
 
 export function calculatePlasticRate(productionData) {
@@ -23,29 +22,9 @@ export function calculatePlasticRate(productionData) {
   };
 }
 
-export function getProductionTimeSeries(productionData) {
-  return productionData
-    .filter((d) => d.Entity === 'World' && d[COL_PRODUCTION])
-    .map((d) => ({ year: +d.Year, tonnes: +d[COL_PRODUCTION] }))
-    .sort((a, b) => a.year - b.year);
-}
-
-// returns kg/person/day (CSV unit)
 export function getCountryWaste(wasteData, countryName) {
   const row = wasteData.find((d) => d.Entity === countryName);
   return row ? +row[COL_WASTE] : null;
-}
-
-export function getCountryMismanaged(mismanagedData, countryName) {
-  const row = mismanagedData.find((d) => d.Entity === countryName);
-  return row ? +row[COL_MISMANAGED] : null;
-}
-
-export function getOceanTimeSeries(oceanData) {
-  return oceanData
-    .filter((d) => d.Entity === 'World' && d[COL_OCEAN])
-    .map((d) => ({ year: +d.Year, tonnes: +d[COL_OCEAN] }))
-    .sort((a, b) => a.year - b.year);
 }
 
 export function mergeCountryData(wasteData, mismanagedData) {
@@ -75,11 +54,4 @@ export function calculatePersonalImpact(kgPerDay, age) {
     bodyWeights: +(lifetimeKg / PHYSICAL_REFERENCES.avgBodyWeightKg).toFixed(1),
     bottlesPerYear: Math.round(kgPerYear / PHYSICAL_REFERENCES.plasticBottleKg),
   };
-}
-
-export function getCountryList(wasteData) {
-  return wasteData
-    .filter((d) => d.Code && d.Entity)
-    .map((d) => d.Entity)
-    .sort();
 }

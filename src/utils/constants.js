@@ -39,17 +39,10 @@ export const PHYSICAL_REFERENCES = {
   creditCardGrams: 5,
 };
 
-export const HISTORICAL_MARKERS = [
-  { year: 1776, label: 'US Founded' },
-  { year: 1945, label: 'WWII Ends' },
-  { year: 1969, label: 'Moon Landing' },
-];
-
 export const CSV_COLUMNS = {
   production: 'Annual plastic production between 1950 and 2019',
   wastePerCapita: 'Per capita plastic waste',
   mismanagedPerCapita: 'Mismanaged plastic waste per capita',
-  oceanAccumulation: 'Plastic leakage to aquatic environment - Leakage type: Accumulated stock in oceans',
 };
 
 const BASE = import.meta.env.BASE_URL;
@@ -57,7 +50,6 @@ export const DATA_PATHS = {
   production: `${BASE}data/global-plastics-production.csv`,
   wastePerCapita: `${BASE}data/plastic-waste-per-capita.csv`,
   mismanagedPerCapita: `${BASE}data/mismanaged-plastic-waste-per-capita.csv`,
-  oceanAccumulation: `${BASE}data/plastic-waste-accumulated-in-oceans.csv`,
 };
 
 export const WORLD_MAP_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';

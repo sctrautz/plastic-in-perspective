@@ -25,8 +25,6 @@ export function useData(csvPath) {
   return { data, loading, error };
 }
 
-// Loads all four CSVs in parallel. Returns { data, loading, error } where
-// data is { production, wastePerCapita, mismanagedPerCapita, oceanAccumulation }.
 export function useAllData() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,10 +35,9 @@ export function useAllData() {
       d3.csv(DATA_PATHS.production),
       d3.csv(DATA_PATHS.wastePerCapita),
       d3.csv(DATA_PATHS.mismanagedPerCapita),
-      d3.csv(DATA_PATHS.oceanAccumulation),
     ])
-      .then(([production, wastePerCapita, mismanagedPerCapita, oceanAccumulation]) => {
-        setData({ production, wastePerCapita, mismanagedPerCapita, oceanAccumulation });
+      .then(([production, wastePerCapita, mismanagedPerCapita]) => {
+        setData({ production, wastePerCapita, mismanagedPerCapita });
         setLoading(false);
       })
       .catch((err) => {
