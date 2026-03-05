@@ -10,7 +10,7 @@ An interactive scrollytelling data visualization about plastic pollution, built 
 
 - **Live Site:** https://sctrautz.github.io/plastic-in-perspective/
 - **Screencast:** https://youtu.be/tH-qrhgpIb8
-- **Process Book:** [Process Book Outline (1).pdf](./Process%20Book%20Outline%20(1).pdf)
+- **Process Book:** [Process Book Outline.pdf](./Process%20Book%20Outline%20.pdf)
 
 ---
 
